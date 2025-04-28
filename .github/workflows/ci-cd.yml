@@ -78,14 +78,91 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-  deploy:
+  approval:
     needs: docker-build-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
+    environment:
+      name: production-approval
+      url: ${{ steps.deployment-url.outputs.url }}
+    
     steps:
+    - name: Generate deployment URL for review
+      id: deployment-url
+      run: |
+        echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+    
+    - name: Summarize changes for approval
+      run: |
+        echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "* Repository: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+        echo "* Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "* Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "* Triggered by: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "* Docker image: ${{ secrets.DOCKER_USERNAME }}/my-app:sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_STEP_SUMMARY
+    
+    - name: Save approval state
+      if: success()
+      run: |
+        mkdir -p /tmp/workflow-data
+        echo "approved" > /tmp/workflow-data/approval-status
+    
+    - name: Upload approval state
+      uses: actions/upload-artifact@v4
+      with:
+        name: approval-status
+        path: /tmp/workflow-data/approval-status
+        retention-days: 1
+
+  deploy:
+    needs: approval
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Download approval status
+      uses: actions/download-artifact@v4
+      with:
+        name: approval-status
+        path: /tmp/workflow-data
+    
+    - name: Check approval status
+      id: check-approval
+      run: |
+        if [ -f "/tmp/workflow-data/approval-status" ] && [ "$(cat /tmp/workflow-data/approval-status)" == "approved" ]; then
+          echo "status=approved" >> $GITHUB_OUTPUT
+        else
+          echo "status=rejected" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+    
     - name: Deploy to production
-      run: echo "Deploying to production server..."
-      # In a real scenario, you would add deployment steps here
-      # For example, using SSH to connect to your server and pull the latest Docker image
-      # or updating a Kubernetes deployment
+      if: steps.check-approval.outputs.status == 'approved'
+      run: |
+        echo "Deploying to production server..."
+        # In a real scenario, you would add deployment steps here
+        # For example, using SSH to connect to your server and pull the latest Docker image
+        # or updating a Kubernetes deployment
+        
+  handle-rejection:
+    needs: [approval]
+    runs-on: ubuntu-latest
+    if: failure() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+    - name: Provide rejection feedback form
+      run: |
+        echo "## Deployment Approval Rejected" >> $GITHUB_STEP_SUMMARY
+        echo "The deployment approval was rejected or timed out." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Resume Deployment" >> $GITHUB_STEP_SUMMARY
+        echo "To provide feedback and resume the deployment, use the 'Resume Deployment' workflow:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Go to the Actions tab" >> $GITHUB_STEP_SUMMARY
+        echo "2. Select 'Resume Deployment' workflow" >> $GITHUB_STEP_SUMMARY
+        echo "3. Click 'Run workflow'" >> $GITHUB_STEP_SUMMARY
+        echo "4. Enter this run ID: \`${{ github.run_id }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "5. Add your comments" >> $GITHUB_STEP_SUMMARY
+        echo "6. Select 'approved' or 'rejected'" >> $GITHUB_STEP_SUMMARY
+        echo "7. Click 'Run workflow'" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Direct link: [Resume Deployment](https://github.com/${{ github.repository }}/actions/workflows/resume-deployment.yml)" >> $GITHUB_STEP_SUMMARY
