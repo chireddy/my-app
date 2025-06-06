@@ -63,13 +63,7 @@ jobs:
       run: pack version
 
     - name: Run Buildpack
-      run: pack build my-app \
-            --path ./src \
-            --builder paketobuildpacks/builder:base \
-            --buildpack gcr.io/paketo-buildpacks/apache-tomcat \
-            --buildpack cgr.dev/chainguard/syft \
-            --env BP_JAVA_APP_SERVER=tomcat
-
+      run: pack build my-app --path ./src --builder paketobuildpacks/builder:base --buildpack cgr.dev/chainguard/syft --buildpack gcr.io/paketo-buildpacks/apache-tomcat --env BP_JAVA_APP_SERVER=tomcat
 
     - name: List Docker images
       run: docker image ls
