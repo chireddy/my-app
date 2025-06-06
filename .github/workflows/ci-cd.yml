@@ -62,7 +62,7 @@ jobs:
         # Path to target application
         path: ./src/
         # Builder to use
-        builder: paketobuildpacks/builder:base
+        builder: paketobuildpacks/builder:full
 
 
           
