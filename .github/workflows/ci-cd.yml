@@ -50,11 +50,25 @@ jobs:
         name: war-file
         path: target/
 
+    - name: Docker Setup Docker
+      uses: docker/setup-docker-action@v4.3.0
+    
+    - name: verify Docker
+      run: docker version      
+
     - name: buildpacks.io
       run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.37.0/pack-v0.37.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
       
     - name: verify pack
       run: pack version
+
+    - name: Run Buildpack
+      run: pack build my-app --builder paketobuildpacks/builder:base --buildpack paketo-buildpacks/apache-tomcat
+
+    - name: List Docker images
+      run: docker image ls
+
+
 
 
           
@@ -62,31 +76,28 @@ jobs:
 
     # - name: Set up Docker Buildx
     #   uses: docker/setup-buildx-action@v3
-
     # - name: Login to Docker Hub
     #   uses: docker/login-action@v3
     #   with:
     #     username: ${{ secrets.DOCKER_USERNAME }}
     #     password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Extract metadata for Docker
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ secrets.DOCKER_USERNAME }}/my-app
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=sha,format=short
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+    # - name: Extract metadata for Docker
+    #   id: meta
+    #   uses: docker/metadata-action@v5
+    #   with:
+    #     images: ${{ secrets.DOCKER_USERNAME }}/my-app
+    #     tags: |
+    #       type=ref,event=branch
+    #       type=ref,event=pr
+    #       type=semver,pattern={{version}}
+    #       type=sha,format=short
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@v5
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: ${{ steps.meta.outputs.tags }}
+    #     labels: ${{ steps.meta.outputs.labels }}
 
   approval:
     needs: docker-build-push
