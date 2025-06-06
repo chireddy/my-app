@@ -51,13 +51,10 @@ jobs:
         path: target/
 
     - name: buildpacks.io
-      uses: bigloupe/buildpacks-action@0.18.1
-      with:
-        image: buildpack_image
-        tag: latest
-        path: ./src/
-        builder: paketobuildpacks/builder:full
-
+      run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.37.0/pack-v0.37.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
+      
+    - name: verify pack
+      run: pack -v
 
 
           
