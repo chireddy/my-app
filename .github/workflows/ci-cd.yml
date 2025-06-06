@@ -49,6 +49,9 @@ jobs:
       with:
         name: war-file
         path: target/
+        
+    - name: List Files
+      run: ls -la
 
     - name: Docker Setup Docker
       uses: docker/setup-docker-action@v4.3.0
