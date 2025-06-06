@@ -51,7 +51,7 @@ jobs:
         path: target/
         
     - name: List Files
-      run: ls -la
+      run: ls -la target/
 
     - name: Docker Setup Docker
       uses: docker/setup-docker-action@v4.3.0
