@@ -51,18 +51,13 @@ jobs:
         path: target/
 
     - name: buildpacks.io
-        # You may pin to the exact commit or the version.
-        # uses: bigloupe/buildpacks-action@2ff971052a193772e4d9e73b76e74c624356fadb
       uses: bigloupe/buildpacks-action@0.18.1
       with:
-        # Name of container image
         image: buildpack_image
-        # Tag of container image
         tag: latest
-        # Path to target application
         path: ./src/
-        # Builder to use
         builder: paketobuildpacks/builder:full
+
 
 
           
