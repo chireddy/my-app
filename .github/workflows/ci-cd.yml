@@ -67,6 +67,10 @@ jobs:
     - name: verify pack
       run: pack version
 
+    - name:  pack suggest
+      run: pack builder suggest
+
+
     - name: Run Buildpack
       run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder:base --env BP_JVM_VERSION=11 --publish --clear-cache
 
