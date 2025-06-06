@@ -63,7 +63,7 @@ jobs:
       run: pack version
 
     - name: Run Buildpack
-      run: pack build my-app --path . --builder paketobuildpacks/builder:base 
+      run: pack build my-app --path /home/runner/work/my-app/my-app/target/*.war --builder paketobuildpacks/builder:base 
 
 
     - name: List Docker images
