@@ -50,14 +50,32 @@ jobs:
         name: war-file
         path: target/
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+    - name: buildpacks.io
+        # You may pin to the exact commit or the version.
+        # uses: bigloupe/buildpacks-action@2ff971052a193772e4d9e73b76e74c624356fadb
+      uses: bigloupe/buildpacks-action@0.18.1
+        with:
+          # Name of container image
+          image: buildpack_image
+          # Tag of container image
+          tag: latest
+          # Path to target application
+          path: ./src/
+          # Builder to use
+          builder: paketobuildpacks/builder:base
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+
+          
+
+
+    # - name: Set up Docker Buildx
+    #   uses: docker/setup-buildx-action@v3
+
+    # - name: Login to Docker Hub
+    #   uses: docker/login-action@v3
+    #   with:
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Extract metadata for Docker
       id: meta
