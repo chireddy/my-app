@@ -76,7 +76,8 @@ jobs:
       run: docker pull paketobuildpacks/run-jammy-base:latest
     - name: Buildpack inspect
       run: pack inspect-builder paketobuildpacks/builder-jammy-base:latest
-
+    - name: Buildpack inspect
+      run: docker inspect paketobuildpacks/run-jammy-base
     - name: Run Buildpack
       run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-base --env BP_JVM_VERSION=11 --pull-policy always
 
