@@ -72,7 +72,8 @@ jobs:
 
     - name: Pull builder image
       run: docker pull paketobuildpacks/builder-jammy-base:latest
-
+    - name: Pull builder image
+      run: docker pull paketobuildpacks/run-jammy-base:latest
 
     - name: Run Buildpack
       run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-base --env BP_JVM_VERSION=11 --pull-policy=never
