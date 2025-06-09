@@ -67,11 +67,11 @@ jobs:
     - name:  pack suggest
       run: pack builder suggest
 
-    # - name: Pull builder image
-    #   run: |
-    #     docker pull paketobuildpacks/builder-jammy-full:latest
-    #     docker pull paketobuildpacks/run-jammy-full:latest
-    #     docker pull buildpacksio/lifecycle:0.20.10
+    - name: Pull builder image
+      run: |
+        docker pull paketobuildpacks/builder-jammy-full:latest
+        docker pull paketobuildpacks/run-jammy-full:latest
+        docker pull buildpacksio/lifecycle:0.20.10
         
     - name: Buildpack inspect
       run: |
