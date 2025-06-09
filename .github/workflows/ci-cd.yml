@@ -94,7 +94,7 @@ jobs:
         docker pull index.docker.io/paketobuildpacks/run-jammy-full:latest
         docker tag paketobuildpacks/run-jammy-full:latest index.docker.io/paketobuildpacks/run-jammy-full:latest
         echo 'List docker images'
-        docker images | grep paketobuildpacks/run-jammy-full
+        docker images | grep index.docker.io/paketobuildpacks/run-jammy-full:latest
 
 
         
