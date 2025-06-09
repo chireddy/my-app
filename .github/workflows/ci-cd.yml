@@ -75,7 +75,7 @@ jobs:
         
     - name: Buildpack inspect
       run: |
-        pack inspect-builder paketobuildpacks/builder-jammy-base:latest
+        pack inspect-builder paketobuildpacks/builder-jammy-full:latest
         docker inspect paketobuildpacks/run-jammy-base
 
     - name: Verify Docker Images
