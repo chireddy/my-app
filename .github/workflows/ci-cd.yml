@@ -82,7 +82,7 @@ jobs:
       run: docker images | grep paketobuildpacks
    
     - name: Run Buildpack
-      run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --run-image paketobuildpacks/run-jammy-base:latest --env BP_JVM_VERSION=11 --pull-policy=never
+      run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder
 
     - name: List Docker images
       run: docker image ls
