@@ -96,10 +96,11 @@ jobs:
         echo 'List docker images'
         echo '-------------------------------------------------'
         docker images | grep paketobuildpacks/run-jammy-full
-        docker images --format '{{.Repository}}:{{.Tag}}' | grep 'index.docker.io/paketobuildpacks/run-jammy-full:latest'
         echo '-------------------------------------------------'
         echo '-------------------------------------------------'
         echo '-------------------------------------------------'
+        docker image inspect paketobuildpacks/run-jammy-full:latest
+        docker image inspect index.docker.io/paketobuildpacks/run-jammy-full:latest
         docker image inspect index.docker.io/paketobuildpacks/run-jammy-full:latest > /dev/null || echo "Tag missing!"
         echo '-------------------------------------------------'
         echo '-------------------------------------------------'
