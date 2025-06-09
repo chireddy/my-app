@@ -67,11 +67,11 @@ jobs:
     - name:  pack suggest
       run: pack builder suggest
 
-    - name: Pull builder image
-      run: |
-        docker pull paketobuildpacks/builder-jammy-full:latest
-        docker pull paketobuildpacks/run-jammy-full:latest
-        docker pull buildpacksio/lifecycle:0.20.10
+    # - name: Pull builder image
+    #   run: |
+    #     docker pull paketobuildpacks/builder-jammy-full:latest
+    #     docker pull paketobuildpacks/run-jammy-full:latest
+    #     docker pull buildpacksio/lifecycle:0.20.10
         
     - name: Buildpack inspect
       run: |
@@ -83,10 +83,16 @@ jobs:
    
     - name: Run Buildpack
       run: |
-        docker rmi index.docker.io/paketobuildpacks/run-jammy-full:latest
+        docker rmi -f paketobuildpacks/run-jammy-full:latest
+        docker rmi -f index.docker.io/paketobuildpacks/run-jammy-full:latest
+        docker rmi -f paketobuildpacks/builder-jammy-full:latest
+        docker builder prune -f
+        docker image prune -a -f
         docker pull paketobuildpacks/run-jammy-full:latest
+        docker pull paketobuildpacks/builder-jammy-full:latest
+        docker pull buildpacksio/lifecycle:0.20.10
         docker tag paketobuildpacks/run-jammy-full:latest index.docker.io/paketobuildpacks/run-jammy-full:latest
-        pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --run-image paketobuildpacks/run-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder --verbose
+        pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder --verbose
 
     - name: List Docker images
       run: docker image ls
