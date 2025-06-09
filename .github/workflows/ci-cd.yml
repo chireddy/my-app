@@ -55,31 +55,34 @@ jobs:
 
     - name: Docker Setup Docker
       uses: docker/setup-docker-action@v4.3.0
-    
-    - name: verify Docker
-      run: docker version      
-
-    # - name: Set up pack
-    #   uses: buildpacks/github-actions/setup-pack@v4
-    - name: buildpacks.io
+ 
+    - name: Install Buildpacks
       run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.37.0/pack-v0.37.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
       
-    - name: verify pack
-      run: pack version
+    - name: Verify Build Pack and Docker
+      run: |
+        pack version
+        docker info
 
     - name:  pack suggest
       run: pack builder suggest
 
     - name: Pull builder image
       run: docker pull paketobuildpacks/builder-jammy-base:latest
+    
     - name: Pull builder image
       run: docker pull paketobuildpacks/run-jammy-base:latest
+    
     - name: Buildpack inspect
-      run: pack inspect-builder paketobuildpacks/builder-jammy-base:latest
-    - name: Buildpack inspect
-      run: docker inspect paketobuildpacks/run-jammy-base
+      run: |
+        pack inspect-builder paketobuildpacks/builder-jammy-base:latest
+        docker inspect paketobuildpacks/run-jammy-base
+
+    - name: Verify Docker Images
+      run: docker images | grep paketobuildpacks
+   
     - name: Run Buildpack
-      run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-base --run-image paketobuildpacks/run-jammy-base:latest --env BP_JVM_VERSION=11 --pull-policy=if-not-present
+      run: pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --run-image paketobuildpacks/run-jammy-base:latest --env BP_JVM_VERSION=11 --pull-policy=never
 
     - name: List Docker images
       run: docker image ls
