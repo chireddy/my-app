@@ -94,10 +94,15 @@ jobs:
         docker pull index.docker.io/paketobuildpacks/run-jammy-full:latest
         docker tag paketobuildpacks/run-jammy-full:latest index.docker.io/paketobuildpacks/run-jammy-full:latest
         echo 'List docker images'
-        docker images | grep index.docker.io/paketobuildpacks/run-jammy-full:latest
-
-
-        
+        echo '-------------------------------------------------'
+        docker images | grep paketobuildpacks/run-jammy-full
+        docker images --format '{{.Repository}}:{{.Tag}}' | grep 'index.docker.io/paketobuildpacks/run-jammy-full:latest'
+        echo '-------------------------------------------------'
+        echo '-------------------------------------------------'
+        echo '-------------------------------------------------'
+        docker image inspect index.docker.io/paketobuildpacks/run-jammy-full:latest > /dev/null || echo "Tag missing!"
+        echo '-------------------------------------------------'
+        echo '-------------------------------------------------'
         pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder
 
     - name: List Docker images
