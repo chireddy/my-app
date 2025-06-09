@@ -83,8 +83,10 @@ jobs:
    
     - name: Run Buildpack
       run: |
+        docker rmi index.docker.io/paketobuildpacks/run-jammy-full:latest
+        docker pull paketobuildpacks/run-jammy-full:latest
         docker tag paketobuildpacks/run-jammy-full:latest index.docker.io/paketobuildpacks/run-jammy-full:latest
-        pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --run-image paketobuildpacks/run-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder
+        pack build my-app --path target/myweb-0.0.4.war --builder paketobuildpacks/builder-jammy-full:latest --run-image paketobuildpacks/run-jammy-full:latest --env BP_JVM_VERSION=11 --pull-policy=never --trust-builder --verbose
 
     - name: List Docker images
       run: docker image ls
